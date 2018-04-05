@@ -16,4 +16,4 @@ $ qmake ../Ludo
 $ make 
 ```
 
-## Project
+## LUDO Project
