@@ -18,7 +18,7 @@
 
 
 
-#include "Q-player.h"
+#include "Q_player.h"
 
 
 Q_player::Q_player():
