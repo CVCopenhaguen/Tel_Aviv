@@ -17,3 +17,12 @@ $ make
 ```
 
 ## LUDO Project
+
+#### 1. Structure:
+
+	- dialog.cpp: Game design (default).
+	- game.cpp: Controls game structure and GUI updates (default).
+	- main.cpp: Run the game (default).
+	- ludo-player.cpp: Example of class initialization to build a new player (default).
+	- ludo-player-random.cpp: Random player to test against (default).
+	- Q-player.cpp: Intelligent player implemented with Q-Learning (implemented). 
