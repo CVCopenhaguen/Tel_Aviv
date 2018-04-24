@@ -4,16 +4,18 @@
 #include <iostream>
 #include "positions_and_dice.h"
 #include <random>
+#include <>
 
 class ludo_player : public QObject {
     Q_OBJECT
-private:
+private: // Variables !!!!
+    
     std::vector<int> pos_start_of_turn;
     std::vector<int> pos_end_of_turn;
     int dice_roll;
     int make_decision();
-public:
-    ludo_player();
+public: // Functions !!!
+    Q_player();
 signals:
     void select_piece(int);
     void turn_complete(bool);
