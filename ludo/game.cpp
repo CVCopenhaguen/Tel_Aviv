@@ -1,4 +1,5 @@
 #include "game.h"
+#include <fstream>
 #define DEBUG 0
 
 game::game():
@@ -240,10 +241,47 @@ std::vector<int> game::relativePosition(){
 }
 
 void game::turnComplete(bool win){
+    static int games_played = 0;
+    static std::vector<int> winners(4,0);
     game_complete = win;
     turn_complete = true;
-    if(game_complete){
-        std::cout << "player: " << color << " won" << std::endl;
+    if(game_complete)
+    {
+	winners[color]++;
+	games_played++;
+	std::cout << std::endl << "-------------------------------------------------------" << std::endl << std::endl;
+	std::cout << "STATISTICS" << std::endl;
+	std::cout << "Total rounds played: " << games_played << std::endl;
+	for(int i=0; i<winners.size(); i++)
+	{
+        	std::cout << "- Player #"  << i << ":" << std::endl;
+		std::cout << "		>> Total wins: " << winners[i] << std::endl;
+		double wr = (double) winners[i] / games_played;
+		std::cout << "		>> Win rate: " << wr*100 << "%" << std::endl;
+		std::cout << std::endl;
+	}// for
+	std::cout << std::endl << "-------------------------------------------------------" << std::endl << std::endl;
+
+	std::ofstream fs;
+	fs.open("../ludo/genfiles/stats_training5.txt");
+	fs << "Training Phase #6" << std::endl;
+	fs << "Learning rate = 0.5" << std::endl;
+	fs << "Gamma (future reward) = 0.1" << std::endl;
+	fs << "Exploration rate = 10%" << std::endl;
+	fs << "Explotation rate = 90%" << std::endl;
+	fs << std::endl;
+	fs << "STATISTICS" << std::endl;
+	fs << "Total rounds played: " << games_played << std::endl;
+	for(int j=0; j<winners.size(); j++)
+	{
+        	fs << "- Player #"  << j << ":" << std::endl;
+		fs << "		>> Total wins: " << winners[j] << std::endl;
+		double wr = (double) winners[j] / games_played;
+		fs << "		>> Win rate: " << wr*100 << "%" << std::endl;
+		fs << std::endl;
+	}// for	
+
+	fs.close();
         emit declare_winner(color);
     }
 }

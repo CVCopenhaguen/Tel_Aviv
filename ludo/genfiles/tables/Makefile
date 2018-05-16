@@ -111,6 +111,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named read_table
+
+# Build rule for target.
+read_table: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 read_table
+.PHONY : read_table
+
+# fast build rule for target.
+read_table/fast:
+	$(MAKE) -f CMakeFiles/read_table.dir/build.make CMakeFiles/read_table.dir/build
+.PHONY : read_table/fast
+
+#=============================================================================
 # Target rules for targets named generate_table
 
 # Build rule for target.
@@ -150,6 +163,33 @@ q_table.cpp.s:
 	$(MAKE) -f CMakeFiles/generate_table.dir/build.make CMakeFiles/generate_table.dir/q_table.cpp.s
 .PHONY : q_table.cpp.s
 
+read.o: read.cpp.o
+
+.PHONY : read.o
+
+# target to build an object file
+read.cpp.o:
+	$(MAKE) -f CMakeFiles/read_table.dir/build.make CMakeFiles/read_table.dir/read.cpp.o
+.PHONY : read.cpp.o
+
+read.i: read.cpp.i
+
+.PHONY : read.i
+
+# target to preprocess a source file
+read.cpp.i:
+	$(MAKE) -f CMakeFiles/read_table.dir/build.make CMakeFiles/read_table.dir/read.cpp.i
+.PHONY : read.cpp.i
+
+read.s: read.cpp.s
+
+.PHONY : read.s
+
+# target to generate assembly for a file
+read.cpp.s:
+	$(MAKE) -f CMakeFiles/read_table.dir/build.make CMakeFiles/read_table.dir/read.cpp.s
+.PHONY : read.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -157,11 +197,15 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
+	@echo "... read_table"
 	@echo "... edit_cache"
 	@echo "... generate_table"
 	@echo "... q_table.o"
 	@echo "... q_table.i"
 	@echo "... q_table.s"
+	@echo "... read.o"
+	@echo "... read.i"
+	@echo "... read.s"
 .PHONY : help
 
 

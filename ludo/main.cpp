@@ -5,6 +5,8 @@
 #include "ludo_player.h"
 #include "ludo_player_random.h"
 #include "positions_and_dice.h"
+// Add new players
+#include "Q_player.h"
 
 Q_DECLARE_METATYPE( positions_and_dice )
 
@@ -13,8 +15,9 @@ int main(int argc, char *argv[]){
     qRegisterMetaType<positions_and_dice>();
 
     //instanciate the players here
-    ludo_player p1, p2;
-    ludo_player_random p3, p4;
+    //ludo_player p1, p2;
+    Q_player p1;
+    ludo_player_random p2, p3, p4;
 
     game g;
     g.setGameDelay(000); //if you want to see the game, set a delay
@@ -55,7 +58,7 @@ int main(int argc, char *argv[]){
     for(int i = 0; i < 10000; ++i){
         g.start();
         a.exec();
-        g.reset();
+	g.reset();
     }
     return 0;
 }

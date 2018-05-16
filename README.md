@@ -4,16 +4,12 @@ Implementing a LUDO player using AI tools.
 
 ## LUDO GUI:
 
-Implemented by Nikolaj Iversend and Niculai Lynnerup, March 18th 2016. Building:
+Implemented by Nikolaj Iversend and Niculai Lynnerup, March 18th 2016. Getting the Game:
 
-```
+```sh
 $ mkdir LUDO-AI2
 $ cd LUDO-AI2
 $ git clone git@gitlab.com:niive12/ludo-gui.git
-$ mkdir -p build
-$ cd build
-$ qmake ../Ludo
-$ make 
 ```
 
 ## LUDO Project
@@ -23,6 +19,48 @@ $ make
 	- dialog.cpp: Game design (default).
 	- game.cpp: Controls game structure and GUI updates (default).
 	- main.cpp: Run the game (default).
-	- ludo-player.cpp: Example of class initialization to build a new player (default).
-	- ludo-player-random.cpp: Random player to test against (default).
-	- Q-player.cpp: Intelligent player implemented with Q-Learning (implemented). 
+	- ludo\_player.cpp: Example of class initialization to build a new player (default).
+	- ludo\_player-random.cpp: Random player to test against (default).
+	- Q\_player.cpp: Intelligent player implemented with Q-Learning (implemented). 
+
+#### 2. Build & Compile
+
+If new implemented classes (like adding _Q\_player.cpp_, modify the _ludo.pro_ file to look like this:
+
+```
+QT       += core gui
+
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+TARGET = ludo
+TEMPLATE = app
+
+
+SOURCES += main.cpp\
+        dialog.cpp \
+    game.cpp \
+    ludo_player.cpp \
+    ludo_player_random.cpp \
+    Q_player.cpp
+
+HEADERS  += dialog.h \
+    game.h \
+    ludo_player.h \
+    positions_and_dice.h \
+    ludo_player_random.h \
+    Q_player.h
+
+FORMS    += dialog.ui
+
+QMAKE_CXXFLAGS += -std=c++11 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wunused
+```
+
+Then, compile it with the following commands:
+
+```sh
+$ cd <project_directory>
+$ mkdir -p build
+$ cd build
+$ qmake ../ludo/ludo.pro
+$ make 
+```

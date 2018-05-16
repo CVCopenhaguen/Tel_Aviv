@@ -1,3 +1,4 @@
 /home/charlie/workspace/AI/LUDO-ToAI/ludo/genfiles/tables/CMakeFiles/rebuild_cache.dir
+/home/charlie/workspace/AI/LUDO-ToAI/ludo/genfiles/tables/CMakeFiles/read_table.dir
 /home/charlie/workspace/AI/LUDO-ToAI/ludo/genfiles/tables/CMakeFiles/edit_cache.dir
 /home/charlie/workspace/AI/LUDO-ToAI/ludo/genfiles/tables/CMakeFiles/generate_table.dir
