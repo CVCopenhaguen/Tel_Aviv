@@ -5,12 +5,16 @@
 #include "ludo_player.h"
 #include "ludo_player_random.h"
 #include "positions_and_dice.h"
+#include <chrono>
 // Add new players
 #include "Q_player.h"
 
 Q_DECLARE_METATYPE( positions_and_dice )
 
-int main(int argc, char *argv[]){
+using namespace std::chrono;
+
+int main(int argc, char *argv[])
+{
     QApplication a(argc, argv);
     qRegisterMetaType<positions_and_dice>();
 
@@ -55,10 +59,19 @@ int main(int argc, char *argv[]){
     QObject::connect(&g, SIGNAL(player4_end(std::vector<int>)),    &p4,SLOT(post_game_analysis(std::vector<int>)));
     QObject::connect(&p4,SIGNAL(turn_complete(bool)),              &g, SLOT(turnComplete(bool)));
 
-    for(int i = 0; i < 10000; ++i){
+    high_resolution_clock::time_point t1 = high_resolution_clock::now();    
+
+    for(int i = 0; i < 10000; ++i)
+    {
         g.start();
         a.exec();
 	g.reset();
     }
+
+    high_resolution_clock::time_point t2 = high_resolution_clock::now();
+    duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+
+    std::cout << "Training time: " << time_span.count()/60 << " minutes (" << time_span.count() << " seconds)." << std::endl; 
+
     return 0;
 }

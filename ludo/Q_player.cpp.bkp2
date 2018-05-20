@@ -2,8 +2,16 @@
 // Intelligent LUDO player using Q-Learning
 // Carlos Viescas Huerta
 
+
+#include "Q_player.h"
+
+using namespace std;
+using namespace cv;
+
+
 /*
-	Q-LEARNING ALGORITHM
+
+	Q-LEARNING ALGORITHM:
 	
 		1. Split the game into discrete set of States & Actions.
 		2. Create Q-Table.
@@ -13,59 +21,16 @@
 			delta_Q(s,a) = alpha * ( r + gamma * max[a1]Q(s1, a1) - Q(s,a) )
 		6. Action Selection.
 
-
-	STATE REPRESENTATION
-
-	1. Home		 	--> 		state = 0
-	2. On free spot		-->		state = 1
-	3. On star		-->		state = 2
-	4. On globe		-->		state = 3
-	5. Shield wall		-->		state = 4
-	6. Red carpet		-->		state = 5
-	7. On goal 		-->		state = 6
-
-	POSSIBLE MOVES REPRESENTATION
-
-	1. Home breakout		-->		move = 1 
-	2. No possible move		-->		move = 0
-	3. Regular move			--> 		move = 2
-	4. Move to star			-->		move = 3
-	5. Move to globe	 	-->		move = 4
-	6. Form a Shield Wall		-->		move = 5
-	7. Enter the Victory Road	-->		move = 6
-	8. Commit suicide		-->		move = 7
-	9. Kill oponent			-->		move = 8
-	10. Make it to goal		-->		move = 9
-
-	BOARD POSITIONS
-
-	Home: -1
-	Stars: 5, 11, 18, 24, 31, 37, 44, 50 
-	Globes: 0, 8, 13, 21, 26, 34, 39, 47
-	Red Carpet: from 50 to 56
-	Hitting 50 goes to goal directly
-	Goal = 56 or 99
-	
 */
 
 
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-
-#include "Q_player.h"
-
-using namespace std;
-using namespace cv;
+//-----------------------------------------------------------------
 
 // Q_player object constructor.
-Q_player::Q_player(): pos_start_of_turn(16), pos_end_of_turn(16), dice_roll(0)
+Q_player::Q_player()//: pos_start_of_turn(16), pos_end_of_turn(16), dice_roll(0)
 {
 	// Load and initialize Q-table
 	acc = 0;
-	srand(time(NULL));
-	pre_state = 0;
-	pre_move = 0;
-	pre_token = 0;
-	pre_position = -1;
 	FileStorage fs("/home/charlie/workspace/AI/LUDO-ToAI/ludo/genfiles/Q_Table.xml", FileStorage::READ);
 	fs["Q_table"] >> Q_table;
 	fs.release();
@@ -79,7 +44,35 @@ Q_player::Q_player(): pos_start_of_turn(16), pos_end_of_turn(16), dice_roll(0)
 
 
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+// 3. STATE REPRESENTATION
+
+
+// Representation of states. Binary state-indicator:
+/*
+
+	1. Home		 	--> 		state = 0
+	2. On free spot		-->		state = 1
+	3. On star		-->		state = 2
+	4. On globe		-->		state = 3
+	5. Shield wall		-->		state = 4
+	6. Red carpet		-->		state = 5
+	7. On goal 		-->		state = 6
+
+*/
+
 // This function calculates the current state for each token the player has. Requires board spot number.
+// Board positions:
+/*
+	Home: -1
+	Stars: 5, 11, 18, 24, 31, 37, 44, 50 
+	Globes: 0, 8, 13, 21, 26, 34, 39, 47
+	Red Carpet: from 50 to 56
+	Hitting 50 goes to goal directly
+		
+*/
 vector<int> Q_player::state()
 {
 	int state = 0;
@@ -177,7 +170,23 @@ vector<int> Q_player::state()
 
 
 
+
 // This function analizes the game after throwing the dice and calculates all the possible moves (actions) to be taken.
+// Binary action-indicator
+/*
+
+	1. Home breakout		-->		move = 1 
+	2. No possible move		-->		move = 0
+	3. Regular move			--> 		move = 2
+	4. Move to star			-->		move = 3
+	5. Move to globe	 	-->		move = 4
+	6. Form a Shield Wall		-->		move = 5
+	7. Enter the Victory Road	-->		move = 6
+	8. Commit suicide		-->		move = 7
+	9. Kill oponent			-->		move = 8
+	10. Make it to goal		-->		move = 9
+
+*/
 vector<int> Q_player::get_possible_moves(int dice)
 {
 	
@@ -188,7 +197,7 @@ vector<int> Q_player::get_possible_moves(int dice)
 	cout << "---- moves ----" << endl;
 
 	// Calculate moves for each token
-	for (int i=0; i<4; i++)
+	for (int i; i<4; i++)
 	{
 		int board_position = pos_start_of_turn[i];
 		
@@ -334,154 +343,200 @@ vector<int> Q_player::get_possible_moves(int dice)
 }// get_possible_moves()
 
 
-// Function to assign rewards to the actions taken by the algorithm
-double Q_player::assign_reward(int previous_move, int previous_position, int current_position, int previous_state, int current)
+// Funtion that creates the playmaker function (contains token, state and move) 
+vector<tuple<int, int, int>> Q_player::play_maker(vector<int> states, vector<int> moves)
 {
-	double reward = 0;
-	static int games = 0;
-
-	// Not Moved!!
-	if(previous_position == current_position && previous_state == current)
-	{
-		reward -= 0.3;
-	}// if not moved
-
-	// Moved
-	if(previous_position != current_position && previous_position < current_position)
-	{
-		reward += 0.25;
-	}// moved
-
-	// Jailbreak
-	if( previous_move == 1 && previous_position == -1 && current_position == 0)
-	{	
-		reward += 0.3;
-	}// if jailbreak
-
-	// Getting a token in goal
-	if( previous_move == 9 )
-	{
-		reward += 1.5;
-	}
-
-	// Kill bill
-	if(previous_move == 8)
-	{
-		reward += 0.15;
-	}// if kill
-
-	// Suicide
-	if(previous_move == 7)
-	{
-		reward -= 0.7;
-	}// Suicide
-
-	// Getting in the Victory Road
-	if(previous_move == 6 && previous_position < 50 && current_position > 50)
-	{
-		reward += 0.12;
-	}// if VR
+	vector<tuple<int,int,int>> PM;
 	
-	// Shieldwall
-	if(previous_move == 5)
-	{
-		reward += 0.05;
-	}// if shieldwall
-
-	// Getting a token killed
 	for(int i=0; i<4; i++)
 	{
-		if(pos_start_of_turn[i] == -1 && pos_end_of_turn[i] != -1)
+		PM.push_back(make_tuple(i, states[i], moves[i]));
+	}// for	
+
+	return PM;
+
+}// play_maker()
+
+
+double Q_player::assign_reward(int performed_action, int previous_position, int current_position, int previous_state, int current)
+{
+	double reward = 0;
+	int goal = 56;
+	static int games = 0;
+
+	// Add two new rewards: Gettin' closer to goal and getting in VR
+	if( previous_position == -1 && current_position != -1 && previous_position != 99 && current_position != 99 )
+	{
+		// Advancing towards goal
+		if( current_position != previous_position && current_position > previous_position )
 		{
-			reward -= 0.2;
+			reward += 0.25;
+		}// reward for moving towards goal.
+
+		// Penalization for getting far of the goal
+		if( (goal - previous_position) < (goal - current_position) )
+		{
+			reward -= 0.05;
+		}// penalization
+	
+		// Penalization for not moving
+		if( performed_action == 0 && previous_position == current_position && previous_state == current)
+		{
+			reward -= 0.8;
+		}// no moving
+
+		// Reward for entering the Victory road
+		if( performed_action == 6 && previous_position < 50)
+		{
+			reward += 0.1;
 		}
-	}
 
-	//---------------------------------------------------
+		// Reward for getting out of home	
+		if(performed_action == 1 && previous_position == -1 && current_position == 0)
+    		{
+        		reward += 0.25;
+    		}//if
 
-	// Winning game
-	bool winning = true;
-	for(int j=0; j<4; j++)
-	{
-		if(pos_end_of_turn[j] != 99)
+		// Reward for killing
+		if(performed_action == 8)
 		{
-			winning = false;
-		}// if
-	}// for j
+			reward += 0.1;
+		}//if
 
-	if(winning == true)
-	{
-		reward += 5;
-		games++;
-	}
-	
-	// Losing the game
-	bool loosing_yellow = true;
-	for(int h=4; h<8; h++)
-	{
-		if(pos_end_of_turn[h] != 99)
+		// Form shieldwall
+		if(performed_action == 5)
 		{
-			loosing_yellow = false;
-		}// if
-	}// for j
+			reward += 0.05;
+		}//if
 	
-	bool loosing_bleu = true;
-	
-	for(int k=8; k<12; k++)
-	{
-		if(pos_end_of_turn[k] != 99)
+		// Sending a token to goal
+		if(performed_action == 9)
 		{
-			loosing_bleu = false;
-		}// if
-	}// for j
+			reward += 1.5;
+		}//if
 	
-	bool loosing_red = true;
-	
-	for(int l=12; l<16; l++)
-	{
-		if(pos_end_of_turn[l] != 99)
+		// Suiciding
+		if(performed_action == 8)
 		{
-			loosing_red = false;
-		}// if
-	}// for j
+			reward -= 0.7;
+		}//if
 	
-	if( loosing_yellow == true ||  loosing_bleu == true || loosing_red == true )
-	{
-		reward -= 3;
-		games++;
-	}
+		// Getting a token killed
+		for(int i=0; i<4; i++)
+		{
+			if(pos_end_of_turn[i] != -1 && pos_start_of_turn[i] == -1)
+			{
+				reward -= 0.5;
+			}// if
+		}// for i
+
+		cout << "Before considering winning" << endl;
+
+		// Winning game
+		bool winning = true;
+		for(int j=0; j<4; j++)
+		{
+			if(pos_end_of_turn[j] != 99)
+			{
+				winning = false;
+			}// if
+		}// for j
+	
+		if(winning == true)
+		{
+			reward += 5;
+			games++;
+		}
+	
+		// Losing the game
+		bool loosing_yellow = true;
+		for(int h=4; h<8; h++)
+		{
+			if(pos_end_of_turn[h] != 99)
+			{
+				loosing_yellow = false;
+			}// if
+		}// for j
+	
+		bool loosing_bleu = true;
+	
+		for(int k=8; k<12; k++)
+		{
+			if(pos_end_of_turn[k] != 99)
+			{
+				loosing_bleu = false;
+			}// if
+		}// for j
+	
+		bool loosing_red = true;
+	
+		for(int l=12; l<16; l++)
+		{
+			if(pos_end_of_turn[l] != 99)
+			{
+				loosing_red = false;
+			}// if
+		}// for j
+	
+		if( loosing_yellow == true ||  loosing_bleu == true || loosing_red == true )
+		{
+			reward -= 3;
+			games++;
+		}
+
+		cout << "Out of rewards" << endl;
+
+	}// if we are in play
 
 	return reward;
 
 }// assign_reward()
 
 
-// Update Q-table values
-void Q_player::update_Q_table(int previous_token, int previous_move, int previous_state, int current, int previous_position, int move)
+// Update Q_table values
+void Q_player::update_Q_table(tuple<int,int,int,int> player_state_action_i, int current)
 {
 	cout << endl << "UPDATE Q_TABLE" << endl << endl;
 
 	double alfa = 0.7; // Learning rate € [0, 1]
-    	double gamma = 0.45; // Discount factor € [0, 1]
+    	double gamma = 0.3; // Discount factor € [0, 1]
 	
-	cout << "LEARNING_RATE = " << alfa << ";  DISCOUNT_FACTOR = " << gamma << endl;    
+	cout << "Learning rate = " << alfa << ";  Discount factor = " << gamma << endl;    
 
-	int current_position = pos_start_of_turn[previous_token];
+	int player_played_i = get<0>(player_state_action_i);
+    	int previous_state = get<1>(player_state_action_i);
+    	int performed_action = get<2>(player_state_action_i);
+    	int previous_position = get<3>(player_state_action_i);
+    	int current_position = pos_start_of_turn[player_played_i];
+    
+	cout << "Previous position: "<< previous_position << endl;
+    	cout << "Current position: "<< current_position << endl;    	
 
-    	double reward = assign_reward(previous_move, previous_position, current_position, previous_state, current);
+    	//int current_player_state = current[0];
+    	double reward = assign_reward(performed_action, previous_position, current_position, previous_state, current);
     		
 	acc += reward; 
     	
    	cout << "Immediate Reward: " << reward << endl;
 	cout << "Accumulated: "<< acc << endl;
 
-	if( reward != 0)
-	{
-    		Q_table.at<float>(previous_state, previous_move) += alfa * (reward + gamma * Q_table.at<float>(current, move) - Q_table.at<float>(previous_state, previous_move));
-		float update = Q_table.at<float>(previous_state, previous_move);
-		cout << "Update ---> Q-Table(" << previous_state << ", " << previous_move << ")  ==  " <<  update << endl;
-	}    	
 
+    	double max = -10000000000000;
+    	for(int i = 0; i < 11 ;  i++)
+    	{
+        	//cout << current_player_state << " " << i << endl;
+        	double test = Q_table.at<float>(current, i);
+        	if(test > max)
+        	{
+        		max  = i;
+        	}
+    	}
+
+   	cout << "Previous state: " << previous_state  << endl;
+    	cout << "Action taken: " << performed_action << endl;
+    	
+    	Q_table.at<float>(previous_state, performed_action) += alfa * (reward + gamma * max - Q_table.at<float>(previous_state, performed_action));
+    	
 	cout << endl << "Q-TABLE UPDATED" << endl << endl;
 
 }// update_Q_table()
@@ -490,32 +545,41 @@ void Q_player::update_Q_table(int previous_token, int previous_move, int previou
 //---------------------------------------------------------------------------------------------------------------------
 
 
-// Function that calls the routine and takes a decision
+// This will require update
 int Q_player::make_decision()
 {
 	cout << endl << "MAKE DECISION" << endl;
 
+	int hh = get<0>(player_state_action_previous_position);
+
 	cout << "Update game-state." << endl;
 	cout << "Dice roll (twist of fate): " << dice_roll << endl;
-        cout << "previous Token moved: #" << pre_token << endl;
-	cout << "Previous move: " << pre_move << endl;        
-	cout << "Previous state: " << pre_state << endl;
+        cout << "previous Token moved: #" << hh << endl;
+	cout << "Previous move: " << std::get<2>(player_state_action_previous_position) << endl;        
+	cout << "Previous state: " << get<1>(player_state_action_previous_position) << endl;
 	
 
 	vector<int> states = Q_player::state();
 	vector<int> movements = Q_player::get_possible_moves(dice_roll);
 
-	cout << "Current state of previous token (#" << pre_token << "): " << states[pre_token] << endl;        
+	cout << "Current state of token #" << hh << ": " << states[hh] << endl;        
 
-	update_Q_table(pre_token, pre_move, pre_state, states[pre_token], pre_position, movements[pre_token]);
+	update_Q_table(player_state_action_previous_position, states[hh]);
+       	player_state_action.clear();
 
         
         FileStorage fs("/home/charlie/workspace/AI/LUDO-ToAI/ludo/genfiles/Q_Table.xml", FileStorage::WRITE);
         fs << "Q_table" << Q_table;
 	fs.release();
         	
-	cout << "Q-Table saved" << endl;
+	cout << "table saved" << endl;
 	
+	
+	//vector<int> states = Q_player::state();
+	//vector<int> movements = Q_player::get_possible_moves(dice_roll);
+	vector<tuple<int,int,int>> token_i = Q_player::play_maker(states, movements);
+  	player_state_action.insert(player_state_action.end(), token_i.begin(), token_i.end());
+
 	for(int v = 0 ; v < 4 ; v++)
     	{
         	if(pos_start_of_turn[v] >=-1 && pos_start_of_turn[v] < 99) // Maybe the if should be changed with no end limit
@@ -534,101 +598,113 @@ int Q_player::make_decision()
 
     	}// for
 	
-	double epsilon = 0.1;
-	pre_token = e_greedy_move_selection(epsilon, states, movements); 
+	//update == false;
+	cout << "Size after all tokens: "<< player_state_action.size() << endl;
 
-	// Update previous parameters
-	pre_state = states[pre_token]; 
-	pre_move = movements[pre_token];
-    	pre_position = pos_start_of_turn[pre_token];
+    	if(player_state_action.size() > 4)
+    	{
+        	cout << "something wrong!!" << endl;
+        	exit(0);
+    	}
+    	
+	cout << "Gonna make decision" << endl;
+
+	double epsilon = 0.2;
+	player_state_action_previous_position = e_greedy(epsilon); // 70% explotation, 30% exploration.
+
+    	cout << "Player: " << player_played << " In state: " << get<1>(player_state_action_previous_position) << " Peforms action: " << get<2>(player_state_action_previous_position) << endl;
 
 	cout << endl << "DECISION MADE" << endl << endl;	
     
-	return pre_token;
+	return player_played;
 
 } // make_decision()
 
 
-// E-Greedy: Choose randomly with probability E, otherwise greedy. Returns decision on which token to choose
-int Q_player::e_greedy_move_selection(double eps, vector<int> states, vector<int> moves)
+// E-Greedy: Choose randomly with probability E, otherwise greedy.
+tuple<int, int, int, int> Q_player::e_greedy(double eps)
 {
-	// tuple< token, action> 
-	int token_decision = 0; 
+	cout << endl << "E_GREEDY LEARNING" << endl << endl;
 
 	// Set e-greedy probability	
-	double EXPLORE_RATE  = eps*100;
-	double explore_activation = (double)(rand() % 1000) / 1000.0;
+	double limit  = eps*100;
 
-	cout << endl << "E-GREEDY SELECTION" << endl << endl;
-	cout << "Exploration rate = " << EXPLORE_RATE << "%  |  Explotation rate =  " << 100-EXPLORE_RATE << "%" << endl;
+	cout << "Exploration rate = " << limit << "%  |  Explotation rate =  " << 100-limit << "%" << endl;
 	
-	// Greedy
-	if(explore_activation < EXPLORE_RATE)
+    	random_device rd;
+    	mt19937 mt(rd());
+    	uniform_int_distribution<int> dist(1 , 100);
+
+   	// Random action
+	if(dist(mt)< limit)
 	{
-		cout << "Greedy decision" << endl;
-		float max = -10000;
+        	int firstPlayer = get<0>(player_state_action[0]);
+	       	int lastPlayer = get<0>(player_state_action[player_state_action.size() -1]);
+	       	cout << "Random decision" << endl;
+        
+		random_device player_r;
+	        mt19937 player_mt(player_r());
+	        uniform_int_distribution<int> dist_p(firstPlayer, lastPlayer);
+
+	        int player = dist_p(player_mt);
+	        player_played = player;
+
+	        int previous_position = pos_start_of_turn[player_played];
+	        auto it = find_if(player_state_action.begin(), player_state_action.end(), [](const tuple<int,int,int>& e) {return get<0>(e) == 0;});
+	        int position = distance(player_state_action.begin(),it);
+	        cout << "position: " << position << endl;
+
+	        int state = get<1>(player_state_action[position]);
+	        int action = get<2>((player_state_action[position]));
+
+	        for(unsigned int i = 0 ; i < player_state_action.size(); i++)
+	        {
+	            int player = get<0>(player_state_action[i]);
+	            int state = get<1>(player_state_action[i]);
+	            int action = get<2>(player_state_action[i]);
+	            double test = Q_table.at<float>(state, action);
+	            cout << test << " ";
+	        }// for
 		
-		// Check all tokens
-		for(int i=0; i<4; i++)
-		{
-			if( (pos_start_of_turn[i] == -1 && dice_roll != 6) || (pos_start_of_turn[i] == 99 && pos_start_of_turn[i] >= 56) )
-			{
-				continue;
-			} // if  
+		cout << endl;
+	        cout << "Random player: " << player << " state: " << state << " Action: " << action << endl;
 
-			float value = Q_table.at<float>(states[i], moves[i]);
-			if(value > max && moves[i] != 0)
-			{
-				max = value;
-				token_decision = i;
-			}//if value
-		}// for
+	        return make_tuple(player, state, action, previous_position);
+	}// if
 
-
-	}// if greedy
-	
-	// Random move
+	// Greedy learned action
 	else
-	{
-		bool playing = false;
-		for(int j=0; j<4; j++)
-		{
-			if(pos_start_of_turn[j] !=-1 && pos_start_of_turn[j] != 99 && pos_start_of_turn[j] < 56)
-			{
-				playing = true;
-				break;
-			}
-		}// for
+	{	
+		cout << "Greedy decision" << endl;
+        	//Return max
+        	double max = -1000000;
+        	int position;
+        	for(unsigned int i = 0 ; i < player_state_action.size(); i++)
+        	{
+        		int player = get<0>(player_state_action[i]);
+        		int state = get<1>(player_state_action[i]);
+        		int action = get<2>(player_state_action[i]);
+        		double test = Q_table.at<float>(state, action);
+        		cout << test;
 
-		while(true)
-		{
-			token_decision = rand() % 4;
-			if( pos_start_of_turn[token_decision] != 99 && pos_start_of_turn[token_decision] < 56 )
-			{
-				if( pos_start_of_turn[token_decision] != -1 && playing == true)			
-				{
-					break;
-				}// if playing
-				else if(playing == false)
-				{
-					break;
-				}// else if
-			}// if
+        		if(test > max)
+            		{
+                		max = test;
+                		position = i;
+                		player_played = player;
+            		}// if
+ 	               cout << endl;
+        	}// for
+        
+		int previous_position = pos_start_of_turn[player_played];
+	        int state = get<1>(player_state_action[position]);
+	        int action = get<2>(player_state_action[position]);
 
-		}// while
+	        return make_tuple(player_played, state, action, previous_position);
 
 	}// else
 
-	while(pos_start_of_turn[token_decision] == 99)
-	{
-		token_decision++;
-		token_decision = token_decision % 4;
-	}// while
-
-	cout << "Decision is token #" << token_decision << endl;
-	cout << endl << "E-GREEDY SELECTION" << endl << endl;
-	
-	return token_decision;
+	cout << endl << "E_GREEDY LEARNING" << endl << endl;
 
 }// e_greedy()
 

@@ -1,0 +1,30 @@
+	TRAINING STAGE #5
+
+------------------------------------
+
+LEARNING RATE = 0.7
+DISCOUNT FACTOR = 0.3
+EXPLORATION RATE = 25%
+EXPLOTATION RATE = 75%
+
+------------------------------------
+
+TRAINING STATISTICS:
+Total rounds played: 10000
+- Player #0:
+		>> Total wins: 4140
+		>> Win rate: 41.4%
+
+- Player #1:
+		>> Total wins: 2061
+		>> Win rate: 20.61%
+
+- Player #2:
+		>> Total wins: 1880
+		>> Win rate: 18.8%
+
+- Player #3:
+		>> Total wins: 1919
+		>> Win rate: 19.19%
+
+Training time: 5.5383 minutes (332.298 seconds)

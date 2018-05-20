@@ -10,7 +10,7 @@ int main( int argc, char** argv )
 {
 
 	FileStorage fs("/home/charlie/workspace/AI/LUDO-ToAI/ludo/genfiles/Q_Table.xml", FileStorage::WRITE);
-	Mat table = Mat::zeros(7, 11, CV_64FC1);
+	Mat table = Mat::zeros(7, 10, CV_64FC1);
 	fs << "Q_table" << table;
 	fs.release();
 

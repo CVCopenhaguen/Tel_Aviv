@@ -240,7 +240,8 @@ std::vector<int> game::relativePosition(){
     return std::move(relative_positions);
 }
 
-void game::turnComplete(bool win){
+void game::turnComplete(bool win)
+{
     static int games_played = 0;
     static std::vector<int> winners(4,0);
     game_complete = win;
@@ -263,14 +264,16 @@ void game::turnComplete(bool win){
 	std::cout << std::endl << "-------------------------------------------------------" << std::endl << std::endl;
 
 	std::ofstream fs;
-	fs.open("../ludo/genfiles/stats_training5.txt");
-	fs << "Training Phase #6" << std::endl;
-	fs << "Learning rate = 0.5" << std::endl;
-	fs << "Gamma (future reward) = 0.1" << std::endl;
-	fs << "Exploration rate = 10%" << std::endl;
-	fs << "Explotation rate = 90%" << std::endl;
+	fs.open("../ludo/genfiles/20-05-2018_7.txt");
+	fs << "	TRAINING STAGE #7" << std::endl << std::endl;
+	fs << "------------------------------------" << std::endl << std::endl;
+	fs << "LEARNING RATE = 0.7" << std::endl;
+	fs << "DISCOUNT FACTOR = 0.45" << std::endl;
+	fs << "EXPLORATION RATE = 10%" << std::endl;
+	fs << "EXPLOTATION RATE = 90%" << std::endl;
 	fs << std::endl;
-	fs << "STATISTICS" << std::endl;
+	fs << "------------------------------------" << std::endl << std::endl;
+	fs << "TRAINING STATISTICS:" << std::endl;
 	fs << "Total rounds played: " << games_played << std::endl;
 	for(int j=0; j<winners.size(); j++)
 	{
@@ -280,6 +283,7 @@ void game::turnComplete(bool win){
 		fs << "		>> Win rate: " << wr*100 << "%" << std::endl;
 		fs << std::endl;
 	}// for	
+	fs << "Training time: " << std::endl;
 
 	fs.close();
         emit declare_winner(color);
