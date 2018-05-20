@@ -1,10 +1,10 @@
 # AI2 Final Project - Tools of Artificial Intelligence
 
-Implementing a LUDO player using AI tools.
+Implementing an intelligent LUDO player using Q-learning. This project belongs to the course of _Tools of Artificial Intelligence_ at Universoty of Southern Denmark.
 
 ## LUDO GUI:
 
-Implemented by Nikolaj Iversend and Niculai Lynnerup, March 18th 2016. Getting the Game:
+Provided by Nikolaj Iversend and Niculai Lynnerup, March 18th 2016. To get the Game:
 
 ```sh
 $ mkdir LUDO-AI2
