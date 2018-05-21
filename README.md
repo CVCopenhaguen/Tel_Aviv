@@ -1,6 +1,6 @@
 # AI2 Final Project - Tools of Artificial Intelligence
 
-Implementing an intelligent LUDO player using Q-learning. This project belongs to the course of _Tools of Artificial Intelligence_ at Universoty of Southern Denmark.
+Implementing an intelligent LUDO player using Q-learning. This project belongs to the course of _Tools of Artificial Intelligence_ at University of Southern Denmark.
 
 ## LUDO GUI:
 

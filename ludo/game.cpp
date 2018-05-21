@@ -264,8 +264,9 @@ void game::turnComplete(bool win)
 	std::cout << std::endl << "-------------------------------------------------------" << std::endl << std::endl;
 
 	std::ofstream fs;
-	fs.open("../ludo/genfiles/20-05-2018_7.txt");
-	fs << "	TRAINING STAGE #7" << std::endl << std::endl;
+	fs.open("../ludo/genfiles/21-05-2018_10.txt");
+	fs << "	TRAINING STAGE #10" << std::endl;
+	fs << "Trained Q_player_fast against ludo_player.cpp" << std::endl << std::endl;
 	fs << "------------------------------------" << std::endl << std::endl;
 	fs << "LEARNING RATE = 0.7" << std::endl;
 	fs << "DISCOUNT FACTOR = 0.45" << std::endl;

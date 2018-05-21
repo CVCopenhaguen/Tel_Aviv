@@ -8,6 +8,7 @@
 #include <chrono>
 // Add new players
 #include "Q_player.h"
+#include "Q_player_fast.h"
 
 Q_DECLARE_METATYPE( positions_and_dice )
 
@@ -19,10 +20,11 @@ int main(int argc, char *argv[])
     qRegisterMetaType<positions_and_dice>();
 
     //instanciate the players here
-    //ludo_player p1, p2;
-    Q_player p1;
-    ludo_player_random p2, p3, p4;
-
+    ludo_player p2;
+    //Q_player p1;
+    Q_player_fast p1;
+    ludo_player_random p3, p4;
+    
     game g;
     g.setGameDelay(000); //if you want to see the game, set a delay
 
@@ -61,7 +63,7 @@ int main(int argc, char *argv[])
 
     high_resolution_clock::time_point t1 = high_resolution_clock::now();    
 
-    for(int i = 0; i < 10000; ++i)
+    for(int i = 0; i < 5000; ++i)
     {
         g.start();
         a.exec();

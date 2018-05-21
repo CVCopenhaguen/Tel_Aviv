@@ -1,0 +1,31 @@
+	TRAINING STAGE #
+Trained against the ludo_player.cpp
+
+------------------------------------
+
+LEARNING RATE = 0.7
+DISCOUNT FACTOR = 0.45
+EXPLORATION RATE = 10%
+EXPLOTATION RATE = 90%
+
+------------------------------------
+
+TRAINING STATISTICS:
+Total rounds played: 5000
+- Player #0:
+		>> Total wins: 1500
+		>> Win rate: 30%
+
+- Player #1:
+		>> Total wins: 793
+		>> Win rate: 15.86%
+
+- Player #2:
+		>> Total wins: 764
+		>> Win rate: 15.28%
+
+- Player #3:
+		>> Total wins: 1943
+		>> Win rate: 38.86%
+
+Training time: 

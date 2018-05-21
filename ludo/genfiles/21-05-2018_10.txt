@@ -1,0 +1,31 @@
+	TRAINING STAGE #10
+Trained Q_player_fast against ludo_player.cpp
+
+------------------------------------
+
+LEARNING RATE = 0.7
+DISCOUNT FACTOR = 0.45
+EXPLORATION RATE = 10%
+EXPLOTATION RATE = 90%
+
+------------------------------------
+
+TRAINING STATISTICS:
+Total rounds played: 5000
+- Player #0:
+		>> Total wins: 1561
+		>> Win rate: 31.22%
+
+- Player #1:
+		>> Total wins: 2018
+		>> Win rate: 40.36%
+
+- Player #2:
+		>> Total wins: 695
+		>> Win rate: 13.9%
+
+- Player #3:
+		>> Total wins: 726
+		>> Win rate: 14.52%
+
+Training time: 2.62729 minutes (157.638 seconds).

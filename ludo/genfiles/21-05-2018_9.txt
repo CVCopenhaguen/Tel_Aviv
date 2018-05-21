@@ -1,0 +1,31 @@
+	TRAINING STAGE #9
+     Trained Q_player_fast
+
+------------------------------------
+
+LEARNING RATE = 0.7
+DISCOUNT FACTOR = 0.45
+EXPLORATION RATE = 10%
+EXPLOTATION RATE = 90%
+
+------------------------------------
+
+TRAINING STATISTICS:
+Total rounds played: 5000
+- Player #0:
+		>> Total wins: 2095
+		>> Win rate: 41.9%
+
+- Player #1:
+		>> Total wins: 1004
+		>> Win rate: 20.08%
+
+- Player #2:
+		>> Total wins: 947
+		>> Win rate: 18.94%
+
+- Player #3:
+		>> Total wins: 954
+		>> Win rate: 19.08%
+
+Training time: 2.58133 minutes (154.88 seconds)

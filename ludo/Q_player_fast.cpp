@@ -51,13 +51,13 @@
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------
 
-#include "Q_player.h"
+#include "Q_player_fast.h"
 
 using namespace std;
 using namespace cv;
 
 // Q_player object constructor.
-Q_player::Q_player(): pos_start_of_turn(16), pos_end_of_turn(16), dice_roll(0)
+Q_player_fast::Q_player_fast(): pos_start_of_turn(16), pos_end_of_turn(16), dice_roll(0)
 {
 	// Load and initialize Q-table
 	acc = 0;
@@ -78,7 +78,7 @@ Q_player::Q_player(): pos_start_of_turn(16), pos_end_of_turn(16), dice_roll(0)
 
 
 // This function calculates the current state for each token the player has. Requires board spot number.
-vector<int> Q_player::state()
+vector<int> Q_player_fast::state()
 {
 	int state = 0;
 	vector<int> states;
@@ -176,7 +176,7 @@ vector<int> Q_player::state()
 
 
 // This function analizes the game after throwing the dice and calculates all the possible moves (actions) to be taken.
-vector<int> Q_player::get_possible_moves(int dice)
+vector<int> Q_player_fast::get_possible_moves(int dice)
 {
 	
 	int idx = -1; // Index = board_postion + dice; Shows where can we go
@@ -333,7 +333,7 @@ vector<int> Q_player::get_possible_moves(int dice)
 
 
 // Function to assign rewards to the actions taken by the algorithm
-double Q_player::assign_reward(int previous_move, int previous_position, int current_position, int previous_state, int current)
+double Q_player_fast::assign_reward(int previous_move, int previous_position, int current_position, int previous_state, int current)
 {
 	double reward = 0;
 	static int games = 0;
@@ -385,6 +385,18 @@ double Q_player::assign_reward(int previous_move, int previous_position, int cur
 	{
 		reward += 0.05;
 	}// if shieldwall
+
+	// Moving to star better than just moving
+	if(previous_move == 3 && previous_state != 2 && current == 2)
+	{
+		reward += 0.05;
+	}// if 
+
+	// Move to globe better than just moving
+	if(previous_move == 4 && previous_state != 3 && current == 3)
+	{
+		reward += 0.025;
+	}// if 
 
 	// Getting a token killed
 	for(int i=0; i<4; i++)
@@ -455,7 +467,7 @@ double Q_player::assign_reward(int previous_move, int previous_position, int cur
 
 
 // Update Q-table values
-void Q_player::update_Q_table(int previous_token, int previous_move, int previous_state, int current, int previous_position, int move)
+void Q_player_fast::update_Q_table(int previous_token, int previous_move, int previous_state, int current, int previous_position, int move)
 {
 	cout << endl << "UPDATE Q_TABLE" << endl << endl;
 
@@ -466,7 +478,7 @@ void Q_player::update_Q_table(int previous_token, int previous_move, int previou
 
 	int current_position = pos_start_of_turn[previous_token];
 
-    	double reward = assign_reward(previous_move, previous_position, current_position, previous_state, current);
+    	double reward = Q_player_fast::assign_reward(previous_move, previous_position, current_position, previous_state, current);
     		
 	acc += reward; 
     	
@@ -489,7 +501,7 @@ void Q_player::update_Q_table(int previous_token, int previous_move, int previou
 
 
 // Function that calls the routine and takes a decision
-int Q_player::make_decision()
+int Q_player_fast::make_decision()
 {
 	cout << endl << "MAKE DECISION" << endl;
 
@@ -500,12 +512,12 @@ int Q_player::make_decision()
 	cout << "Previous state: " << pre_state << endl;
 	
 
-	vector<int> states = Q_player::state();
-	vector<int> movements = Q_player::get_possible_moves(dice_roll);
+	vector<int> states = Q_player_fast::state();
+	vector<int> movements = Q_player_fast::get_possible_moves(dice_roll);
 
 	cout << "Current state of previous token (#" << pre_token << "): " << states[pre_token] << endl;        
 
-	update_Q_table(pre_token, pre_move, pre_state, states[pre_token], pre_position, movements[pre_token]);
+	Q_player_fast::update_Q_table(pre_token, pre_move, pre_state, states[pre_token], pre_position, movements[pre_token]);
 
         
         FileStorage fs("/home/charlie/workspace/AI/LUDO-ToAI/ludo/genfiles/Q_Table.xml", FileStorage::WRITE);
@@ -533,7 +545,7 @@ int Q_player::make_decision()
     	}// for
 	
 	double epsilon = 0.1;
-	pre_token = e_greedy_move_selection(epsilon, states, movements); 
+	pre_token = Q_player_fast::e_greedy_move_selection(epsilon, states, movements); 
 
 	// Update previous parameters
 	pre_state = states[pre_token]; 
@@ -548,7 +560,7 @@ int Q_player::make_decision()
 
 
 // E-Greedy: Choose randomly with probability E, otherwise greedy. Returns decision on which token to choose
-int Q_player::e_greedy_move_selection(double eps, vector<int> states, vector<int> moves)
+int Q_player_fast::e_greedy_move_selection(double eps, vector<int> states, vector<int> moves)
 {
 	// tuple< token, action> 
 	int token_decision = 0; 
@@ -635,18 +647,18 @@ int Q_player::e_greedy_move_selection(double eps, vector<int> states, vector<int
 
 
 
-void Q_player::start_turn(positions_and_dice relative)
+void Q_player_fast::start_turn(positions_and_dice relative)
 {
     pos_start_of_turn = relative.pos;
     dice_roll = relative.dice;
-    int decision = make_decision();
+    int decision = Q_player_fast::make_decision();
     emit select_piece(decision);
 
 }// start_turn()
 
 
 
-void Q_player::post_game_analysis(std::vector<int> relative_pos)
+void Q_player_fast::post_game_analysis(std::vector<int> relative_pos)
 {
     	pos_end_of_turn = relative_pos;
     	bool game_complete = true;

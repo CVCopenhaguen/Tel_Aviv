@@ -53,22 +53,26 @@ SOURCES       = ../ludo/main.cpp \
 		../ludo/game.cpp \
 		../ludo/ludo_player.cpp \
 		../ludo/ludo_player_random.cpp \
-		../ludo/Q_player.cpp moc_dialog.cpp \
+		../ludo/Q_player.cpp \
+		../ludo/Q_player_fast.cpp moc_dialog.cpp \
 		moc_game.cpp \
 		moc_ludo_player.cpp \
 		moc_ludo_player_random.cpp \
-		moc_Q_player.cpp
+		moc_Q_player.cpp \
+		moc_Q_player_fast.cpp
 OBJECTS       = main.o \
 		dialog.o \
 		game.o \
 		ludo_player.o \
 		ludo_player_random.o \
 		Q_player.o \
+		Q_player_fast.o \
 		moc_dialog.o \
 		moc_game.o \
 		moc_ludo_player.o \
 		moc_ludo_player_random.o \
-		moc_Q_player.o
+		moc_Q_player.o \
+		moc_Q_player_fast.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -161,12 +165,14 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		../ludo/ludo_player.h \
 		../ludo/positions_and_dice.h \
 		../ludo/ludo_player_random.h \
-		../ludo/Q_player.h ../ludo/main.cpp \
+		../ludo/Q_player.h \
+		../ludo/Q_player_fast.h ../ludo/main.cpp \
 		../ludo/dialog.cpp \
 		../ludo/game.cpp \
 		../ludo/ludo_player.cpp \
 		../ludo/ludo_player_random.cpp \
-		../ludo/Q_player.cpp
+		../ludo/Q_player.cpp \
+		../ludo/Q_player_fast.cpp
 QMAKE_TARGET  = ludo
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = ludo
@@ -394,8 +400,8 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents ../ludo/dialog.h ../ludo/game.h ../ludo/ludo_player.h ../ludo/positions_and_dice.h ../ludo/ludo_player_random.h ../ludo/Q_player.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../ludo/main.cpp ../ludo/dialog.cpp ../ludo/game.cpp ../ludo/ludo_player.cpp ../ludo/ludo_player_random.cpp ../ludo/Q_player.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../ludo/dialog.h ../ludo/game.h ../ludo/ludo_player.h ../ludo/positions_and_dice.h ../ludo/ludo_player_random.h ../ludo/Q_player.h ../ludo/Q_player_fast.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../ludo/main.cpp ../ludo/dialog.cpp ../ludo/game.cpp ../ludo/ludo_player.cpp ../ludo/ludo_player_random.cpp ../ludo/Q_player.cpp ../ludo/Q_player_fast.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../ludo/dialog.ui $(DISTDIR)/
 
 
@@ -419,9 +425,9 @@ check: first
 
 compiler_rcc_make_all:
 compiler_rcc_clean:
-compiler_moc_header_make_all: moc_dialog.cpp moc_game.cpp moc_ludo_player.cpp moc_ludo_player_random.cpp moc_Q_player.cpp
+compiler_moc_header_make_all: moc_dialog.cpp moc_game.cpp moc_ludo_player.cpp moc_ludo_player_random.cpp moc_Q_player.cpp moc_Q_player_fast.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_dialog.cpp moc_game.cpp moc_ludo_player.cpp moc_ludo_player_random.cpp moc_Q_player.cpp
+	-$(DEL_FILE) moc_dialog.cpp moc_game.cpp moc_ludo_player.cpp moc_ludo_player_random.cpp moc_Q_player.cpp moc_Q_player_fast.cpp
 moc_dialog.cpp: ../ludo/game.h \
 		../ludo/positions_and_dice.h \
 		../ludo/dialog.h
@@ -442,6 +448,10 @@ moc_ludo_player_random.cpp: ../ludo/positions_and_dice.h \
 moc_Q_player.cpp: ../ludo/positions_and_dice.h \
 		../ludo/Q_player.h
 	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I/home/charlie/workspace/AI/LUDO-ToAI/ludo -I/usr/local/lib -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../ludo/Q_player.h -o moc_Q_player.cpp
+
+moc_Q_player_fast.cpp: ../ludo/positions_and_dice.h \
+		../ludo/Q_player_fast.h
+	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I/home/charlie/workspace/AI/LUDO-ToAI/ludo -I/usr/local/lib -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../ludo/Q_player_fast.h -o moc_Q_player_fast.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -465,7 +475,9 @@ main.o: ../ludo/main.cpp ../ludo/dialog.h \
 		../ludo/game.h \
 		../ludo/positions_and_dice.h \
 		../ludo/ludo_player.h \
-		../ludo/ludo_player_random.h
+		../ludo/ludo_player_random.h \
+		../ludo/Q_player.h \
+		../ludo/Q_player_fast.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../ludo/main.cpp
 
 dialog.o: ../ludo/dialog.cpp ../ludo/dialog.h \
@@ -490,6 +502,10 @@ Q_player.o: ../ludo/Q_player.cpp ../ludo/Q_player.h \
 		../ludo/positions_and_dice.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Q_player.o ../ludo/Q_player.cpp
 
+Q_player_fast.o: ../ludo/Q_player_fast.cpp ../ludo/Q_player_fast.h \
+		../ludo/positions_and_dice.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Q_player_fast.o ../ludo/Q_player_fast.cpp
+
 moc_dialog.o: moc_dialog.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_dialog.o moc_dialog.cpp
 
@@ -504,6 +520,9 @@ moc_ludo_player_random.o: moc_ludo_player_random.cpp
 
 moc_Q_player.o: moc_Q_player.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_Q_player.o moc_Q_player.cpp
+
+moc_Q_player_fast.o: moc_Q_player_fast.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_Q_player_fast.o moc_Q_player_fast.cpp
 
 ####### Install
 
